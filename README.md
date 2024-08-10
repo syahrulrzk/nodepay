@@ -4,7 +4,7 @@ Before running the script, ensure you have Python installed on your machine. The
 # clone repo
  ```sh
     git clone https://github.com/0xmiwe/nodepay-.git 
-    cd nodepay
+    cd nodepay-
  ```
 # install 
 ```sh
