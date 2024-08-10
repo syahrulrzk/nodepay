@@ -9,7 +9,7 @@ Before running the script, ensure you have Python installed on your machine. The
  ```
 # Then, run with our Screen
 ```sh
-screen -s nodepays
+screen -R nodepays
 ```
 # install 
 ```sh
