@@ -12,8 +12,12 @@ Before running the script, ensure you have Python installed on your machine. The
 ```
 1. Replace `NP TOken` list in correct formate in `node.py` File Line ```9```.
 2. Dont Forget to add multiple proxies in the proxy.txt file you can add 1000+ proxy !! Formate # `HTTP://username:pass@ip:port`.
-3. To Run Script
+3. Create screen
+   ```sh
+   Screen -R nodepay
+   ```
+4. To Run Script
    ```sh
    python3 node.py
    ``` 
-4. To Run multiple User ID just copy paste the `node.py` file code and create new python file and repeat the process !!.
+5. To Run multiple User ID just copy paste the `node.py` file code and create new python file and repeat the process !!.
