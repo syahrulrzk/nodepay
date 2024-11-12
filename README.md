@@ -36,4 +36,4 @@ screen -R nodepays
    ``` 
  2. done..
 
-GOD LUCK..!!!!
+GOOD LUCK..!!!!
