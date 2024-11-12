@@ -1,5 +1,4 @@
-python-dotenv
 requests
-websockets
-loguru
-websockets-proxy
+termcolor
+pyfiglet
+inquirer

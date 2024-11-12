@@ -7,14 +7,18 @@ Before running the script, ensure you have Python installed on your machine. The
     git clone https://github.com/0xmiwe/nodepay-.git 
     cd nodepay-
  ```
-# create `.env` edit this file example :
+# create `token.txt` edit this file example :
  ```sh
- NP_TOKEN=ey
+ ey1
+ ey2
+ ey3
  ```
 # Create `proxy.txt` if you need
  Add your proxy details in proxy.txt. Each line should have the format:
  ```sh
-host:port:username:password
+ host:port:username:password
+ host:port:username:password
+ host:port:username:password
  ```
 # Then, run with our Screen
 ```sh
