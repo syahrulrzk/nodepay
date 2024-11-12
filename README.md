@@ -14,7 +14,7 @@ Before running the script, ensure you have Python installed on your machine. The
 # Create `proxy.txt` if you need
  Add your proxy details in proxy.txt. Each line should have the format:
  ```sh
- http://password:username@ip:port
+host:port:username:password
  ```
 # Then, run with our Screen
 ```sh
