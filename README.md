@@ -32,12 +32,8 @@ screen -R nodepays
 
  1. To Run Script with proxy
    ```sh
-   python3 node.py
+   python3 main.py
    ``` 
- 2. wo run script without proxy
-  ```sh
-  python3 Noproxy.py
-  ```
- 3. done..
+ 2. done..
 
 GOD LUCK..!!!!
