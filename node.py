@@ -4,15 +4,20 @@ import json
 import time
 import uuid
 from loguru import logger
+from dotenv import load_dotenv
+import os
+
+# Muat variabel lingkungan dari .env
+load_dotenv()
 
 # Constants
-NP_TOKEN = "WRITE_YOUR_NP_TOKEN_HERE"
+NP_TOKEN = os.getenv("NP_TOKEN")
 PING_INTERVAL = 30  # seconds
 RETRIES = 60  # Global retry counter for ping failures
 
 DOMAIN_API = {
-    "SESSION": "https://api.nodepay.ai/api/auth/session",
-    "PING": "https://nw2.nodepay.ai/api/network/ping"
+    "SESSION": "http://18.136.143.169/api/auth/session",
+    "PING": "http://18.136.143.169/api/auth/session"
 }
 
 CONNECTION_STATES = {
