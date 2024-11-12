@@ -7,6 +7,15 @@ Before running the script, ensure you have Python installed on your machine. The
     git clone https://github.com/0xmiwe/nodepay-.git 
     cd nodepay-
  ```
+# create .env edit this file example :
+ ```sh
+ NP_TOKEN=ey
+ ```
+# Create proxy.txt if you need
+ Add your proxy details in proxy.txt. Each line should have the format:
+ ```sh
+ http://password:username@ip:port
+ ```
 # Then, run with our Screen
 ```sh
 screen -R nodepays
@@ -15,10 +24,16 @@ screen -R nodepays
 ```sh
    pip install -r requirements.txt
 ```
-1. Replace `NP TOken` list in correct formate in `node.py` File Line ```9```.
-2. Dont Forget to add multiple proxies in the proxy.txt file you can add 1000+ proxy !! Formate # `HTTP://username:pass@ip:port`.
-3. To Run Script
+# run bot
+
+ 1. To Run Script with proxy
    ```sh
    python3 node.py
    ``` 
-4. To Run multiple User ID just copy paste the `node.py` file code and create new python file and repeat the process !!.
+ 2. wo run script without proxy
+  ```sh
+  python3 Noproxy.py
+  ```
+ 3. done..
+
+GOD LUCK..!!!!
