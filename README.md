@@ -7,11 +7,11 @@ Before running the script, ensure you have Python installed on your machine. The
     git clone https://github.com/0xmiwe/nodepay-.git 
     cd nodepay-
  ```
-# create .env edit this file example :
+# create `.env` edit this file example :
  ```sh
  NP_TOKEN=ey
  ```
-# Create proxy.txt if you need
+# Create `proxy.txt` if you need
  Add your proxy details in proxy.txt. Each line should have the format:
  ```sh
  http://password:username@ip:port
