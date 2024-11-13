@@ -14,7 +14,7 @@ def read_lines(filename):
 class Config:
     def __init__(self):
         self.base_url = 'https://nodepay.org'
-        self.ping_url = 'http://54.255.192.166/api/network/ping'
+        self.ping_url = 'http://52.17.10.116/api/network/ping'
         self.retry_interval = 30
         self.session_url = 'http://18.136.143.169/api/auth/session'
 
