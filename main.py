@@ -5,6 +5,7 @@ import multiprocessing
 from termcolor import colored
 import pyfiglet
 import inquirer
+from datetime import datetime
 
 def read_lines(filename):
     with open(filename, 'r') as file:
@@ -19,18 +20,26 @@ class Config:
 
 class Logger:
     @staticmethod
+    def get_timestamp():
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    @staticmethod
     def info(message, data=None):
-        info_message = f"[INFO] {message}: {data}" if data else f"[INFO] {message}"
+        timestamp = Logger.get_timestamp()
+        info_message = f"[{timestamp}] [INFO] {message}: {data}" if data else f"[{timestamp}] [INFO] {message}"
         print(colored(info_message, 'green'))
 
     @staticmethod
     def success(message, token):
-        print(colored(f"[INFO] Ping sent: {{'status': 'success', 'token': '{token}'}}", 'green'))
-        print(colored(f"Ping sent successfully for token {token}", 'cyan'))
+        timestamp = Logger.get_timestamp()
+        # Updated success message in English without token details and no emojis
+        print(colored(f"[{timestamp}] Ping sent successfully to the server!", 'green'))
+        print(colored(f"[{timestamp}] Ping was sent successfully and executed smoothly.", 'cyan'))
 
     @staticmethod
     def error(message, data=None):
-        error_message = f"[ERROR] {message}: {data}" if data else f"[ERROR] {message}"
+        timestamp = Logger.get_timestamp()
+        error_message = f"[{timestamp}] [ERROR] {message}: {data}" if data else f"[{timestamp}] [ERROR] {message}"
         print(colored(error_message, 'red'))
 
 class Bot:
@@ -49,10 +58,10 @@ class Bot:
                 try:
                     self.send_ping(account_info, token, user_agent)
                 except Exception as error:
-                    self.logger.error(f"Ping error: {error}")
+                    self.logger.error("Ping error", str(error))
                 time.sleep(self.config.retry_interval)
         except Exception as error:
-            self.logger.error(f"Connection error: {error}")
+            self.logger.error("Connection error", str(error))
 
     def get_session(self, token, user_agent):
         headers = {
@@ -117,6 +126,11 @@ def run_bot_for_token(token, config, logger, proxy=None):
 def main():
     display_welcome()
 
+    # Check if token file exists and is not empty
+    if not os.path.exists('token.txt') or os.stat('token.txt').st_size == 0:
+        print(colored("[ERROR] Token file not found or is empty!", 'red'))
+        return
+
     tokens = read_lines('token.txt')
     config = Config()
     logger = Logger()
@@ -129,7 +143,7 @@ def main():
     for i, token in enumerate(tokens):
         proxy = configure_proxy(proxies[i % len(proxies)]) if proxies else None
         if proxy:
-            logger.info(f"Using proxy for token {i + 1}: {proxy}")
+            logger.info(f"Using proxy for token {i + 1}", proxy)
 
         process = multiprocessing.Process(target=run_bot_for_token, args=(token, config, logger, proxy))
         process.start()

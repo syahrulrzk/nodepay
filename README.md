@@ -20,20 +20,22 @@ Before running the script, ensure you have Python installed on your machine. The
  host:port:username:password
  host:port:username:password
  ```
+ # install 
+ ```sh
+ pip install -r requirements.txt
+ ```
 # Then, run with our Screen
-```sh
-screen -R nodepays
-```
-# install 
-```sh
-   pip install -r requirements.txt
-```
+ ```sh
+ screen -R nodepays
+ ```
 # run bot
 
  1. To Run Script with proxy
    ```sh
    python3 main.py
    ``` 
- 2. done..
+ 2. ctrl a d for close screen
 
-GOOD LUCK..!!!!
+ 3. done..
+
+GOD LUCK..!!!!
