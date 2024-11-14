@@ -6,6 +6,7 @@ import pyfiglet
 import inquirer
 from threading import Thread
 from datetime import datetime
+import itertools
 
 def read_lines(filename):
     with open(filename, 'r') as file:
@@ -21,37 +22,37 @@ class Config:
 class Logger:
     @staticmethod
     def info(message, data=None):
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(colored(f"[{timestamp}] [INFO] {message}: {data}", 'green'))
+        print(colored(f"[INFO] {message}: {data}", 'green'))
 
     @staticmethod
     def error(message, data=None):
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(colored(f"[{timestamp}] [ERROR] {message}: {data}", 'red'))
+        print(colored(f"[ERROR] {message}: {data}", 'red'))
 
 class Bot:
-    def __init__(self, config, logger, proxy=None):
+    def __init__(self, config, logger, proxies=None):
         self.config = config
         self.logger = logger
-        self.proxy = proxy
+        self.proxies = proxies or []
+        self.proxy_cycle = itertools.cycle(self.proxies)
 
     def connect(self, token):
         try:
             user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             account_info = self.get_session(token, user_agent)
-            print(colored(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Session initiated successfully for token: {token[:10]}...!", 'cyan'))
+            print(colored(f"Connected to session successfully for token {token[:10]}...", 'cyan'))
             self.logger.info('Session info', {'status': 'success', 'token': token[:10] + '...'})
 
             while True:
                 try:
-                    self.send_ping(account_info, token, user_agent)
+                    proxy = next(self.proxy_cycle)
+                    self.send_ping(account_info, token, user_agent, proxy)
                 except Exception as error:
-                    print(colored(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Ping error for token {token[:10]}...: {error}", 'yellow'))
+                    print(colored(f"Ping error for token {token[:10]}...: {error}", 'yellow'))
                     self.logger.error('Ping error', {'error': str(error), 'token': token[:10] + '...'})
 
                 time.sleep(self.config.retry_interval)
         except Exception as error:
-            print(colored(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Connection error for token {token[:10]}...: {error}", 'red'))
+            print(colored(f"Connection error for token {token[:10]}...: {error}", 'red'))
             self.logger.error('Connection error', {'error': str(error), 'token': token[:10] + '...'})
 
     def get_session(self, token, user_agent):
@@ -62,14 +63,14 @@ class Bot:
             'Accept': 'application/json'
         }
 
-        if self.proxy:
-            response = requests.post(self.config.session_url, headers=headers, proxies=self.proxy)
+        if self.proxies:
+            response = requests.post(self.config.session_url, headers=headers, proxies=self.proxies[0])
         else:
             response = requests.post(self.config.session_url, headers=headers)
 
         return response.json()['data']
 
-    def send_ping(self, account_info, token, user_agent):
+    def send_ping(self, account_info, token, user_agent, proxy):
         ping_data = {
             'id': account_info.get('uid', 'Unknown'),
             'browser_id': account_info.get('browser_id', 'random_browser_id'),
@@ -84,20 +85,28 @@ class Bot:
             'Accept': 'application/json'
         }
 
-        if self.proxy:
-            response = requests.post(self.config.ping_url, json=ping_data, headers=headers, proxies=self.proxy)
-        else:
-            response = requests.post(self.config.ping_url, json=ping_data, headers=headers)
+        try:
+            start_time = time.time()
 
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(colored(f"[{timestamp}] Ping sent successfully for token {token[:10]}...", 'magenta'))
-        self.logger.info('Ping sent', {'status': 'success', 'token': token[:10] + '...'})
+            response = requests.post(self.config.ping_url, json=ping_data, headers=headers, proxies=proxy)
+
+            end_time = time.time()
+
+            ping_duration = end_time - start_time
+
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            print(colored(f"[{timestamp}] Ping sent successfully for token {token[:10]}... using proxy {proxy['http'][:30]}... | Duration: {ping_duration:.2f} seconds", 'magenta'))
+            self.logger.info('Ping sent', {'status': 'success', 'token': token[:10] + '...', 'proxy': proxy['http'][:30], 'duration': f'{ping_duration:.2f} seconds'})
+        except Exception as error:
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            print(colored(f"[{timestamp}] Ping error for token {token[:10]}... using proxy {proxy['http'][:30]}: {error}", 'yellow'))
+            self.logger.error('Ping error', {'error': str(error), 'token': token[:10] + '...', 'proxy': proxy['http'][:30]})
 
 def display_welcome():
     ascii_art = pyfiglet.figlet_format("Nodepay Bot")
     print(colored(ascii_art, 'yellow'))
     print(colored("========================================", 'cyan'))
-    print(colored("=        Welcome to Miwe Airdrop       =", 'cyan'))
+    print(colored("=        Welcome to MiweAirdrop        =", 'cyan'))
     print(colored("=       Automated & Powerful Bot       =", 'cyan'))
     print(colored("========================================", 'cyan'))
 
@@ -118,14 +127,20 @@ def configure_proxy():
         print(colored("No proxies found in proxy.txt", 'red'))
         return None
 
-    proxy = proxies[0].split(':')
-    if len(proxy) == 4:
-        host, port, username, password = proxy
-        return {
-            'http': f'http://{username}:{password}@{host}:{port}',
-            'https': f'http://{username}:{password}@{host}:{port}'
-        }
-    return None
+    proxies = proxies[:100]
+
+    proxy_list = []
+    for proxy in proxies:
+        proxy_parts = proxy.split(':')
+        if len(proxy_parts) == 4:
+            host, port, username, password = proxy_parts
+            proxy_dict = {
+                'http': f'http://{username}:{password}@{host}:{port}',
+                'https': f'http://{username}:{password}@{host}:{port}'
+            }
+            proxy_list.append(proxy_dict)
+    
+    return proxy_list
 
 def main():
     display_welcome()
@@ -136,19 +151,18 @@ def main():
 
     proxy_mode = ask_proxy_mode()
 
-    proxy = None
+    proxies = None
     if proxy_mode == 'Use Proxy':
-        proxy = configure_proxy()
-        if proxy:
-            print(colored(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Proxy enabled: {proxy['http'][:30]}...", 'green'))
+        proxies = configure_proxy()
+        if proxies:
+            print(colored(f"Using {len(proxies)} proxies", 'green'))
         else:
             print(colored("No valid proxy configured, using direct connection.", 'yellow'))
 
-    bot = Bot(config, logger, proxy)
+    bot = Bot(config, logger, proxies)
 
     threads = []
     for token in tokens:
-        # Run each connection in a separate thread to handle multiple accounts simultaneously
         thread = Thread(target=bot.connect, args=(token,))
         thread.start()
         threads.append(thread)
