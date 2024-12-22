@@ -4,8 +4,8 @@ Before running the script, ensure you have Python installed on your machine. The
 
 # clone repo
  ```sh
-    git clone https://github.com/0xmiwe/nodepay-.git 
-    cd nodepay-
+    git clone https://github.com/0xmiwe/nodepay.git 
+    cd nodepay
  ```
 # create `token.txt` edit this file example :
  ```sh
